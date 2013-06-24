@@ -77,8 +77,24 @@ interface  MarketplaceWebServiceProducts_Interface
 
             
     /**
+     * Get Matching Product For Id 
+     * GetMatchingProductForId will return the details (attributes) for the
+     * given Identifier list. Identifer type can be one of [SKU|ASIN|UPC|EAN|ISBN|GTIN|JAN]
+     *   
+     * @see http://docs.amazonwebservices.com/${docPath}GetMatchingProductForId.html      
+     * @param mixed $request array of parameters for MarketplaceWebServiceProducts_Model_GetMatchingProductForIdRequest request
+     * or MarketplaceWebServiceProducts_Model_GetMatchingProductForIdRequest object itself
+     * @see MarketplaceWebServiceProducts_Model_GetMatchingProductForIdRequest
+     * @return MarketplaceWebServiceProducts_Model_GetMatchingProductForIdResponse MarketplaceWebServiceProducts_Model_GetMatchingProductForIdResponse
+     *
+     * @throws MarketplaceWebServiceProducts_Exception
+     */
+    public function getMatchingProductForId($request);
+
+
+            
+    /**
      * Get My Price For SKU 
-     * Get my price
      *   
      * @see http://docs.amazonwebservices.com/${docPath}GetMyPriceForSKU.html      
      * @param mixed $request array of parameters for MarketplaceWebServiceProducts_Model_GetMyPriceForSKURequest request
@@ -162,7 +178,8 @@ interface  MarketplaceWebServiceProducts_Interface
             
     /**
      * Get My Price For ASIN 
-     * Get my price
+     * Gets categories information for a product identified by
+     * the SellerId and SKU.
      *   
      * @see http://docs.amazonwebservices.com/${docPath}GetMyPriceForASIN.html      
      * @param mixed $request array of parameters for MarketplaceWebServiceProducts_Model_GetMyPriceForASINRequest request

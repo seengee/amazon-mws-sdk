@@ -164,7 +164,7 @@ include_once ('ProductsUtil.php');
                                 $nodeList = $relationships->getAny();
                                 echo(prettyPrint($nodeList));
                             }
-                        }   
+                        }
                         if ($product->isSetCompetitivePricing()) { 
                             echo("                    CompetitivePricing\n");
                             $competitivePricing = $product->getCompetitivePricing();
@@ -535,4 +535,4 @@ include_once ('ProductsUtil.php');
          echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
      }
  }
-                                            
+                                                

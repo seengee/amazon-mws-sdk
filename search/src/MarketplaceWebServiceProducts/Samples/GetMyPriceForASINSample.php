@@ -77,11 +77,10 @@ include_once ('.config.inc.php');
  // object or array of parameters
  invokeGetMyPriceForASIN($service, $request);
 
-                                                        
+                                                            
 /**
   * Get My Price For ASIN Action Sample
-  * Get my price
-  *   
+  
   * @param MarketplaceWebServiceProducts_Interface $service instance of MarketplaceWebServiceProducts_Interface
   * @param mixed $request MarketplaceWebServiceProducts_Model_GetMyPriceForASIN or array of parameters
   */

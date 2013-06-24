@@ -77,7 +77,7 @@ include_once ('.config.inc.php');
  // object or array of parameters
  invokeGetProductCategoriesForASIN($service, $request);
 
-                                                                
+                                                                    
 /**
   * Get Product Categories For ASIN Action Sample
   * Gets categories information for a product identified by

@@ -77,7 +77,7 @@ include_once ('.config.inc.php');
  // object or array of parameters
  invokeGetLowestOfferListingsForSKU($service, $request);
 
-                                                            
+                                                                
 /**
   * Get Lowest Offer Listings For SKU Action Sample
   * Gets some of the lowest prices based on the product identified by the given

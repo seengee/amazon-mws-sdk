@@ -91,8 +91,29 @@ class  MarketplaceWebServiceProducts_Mock implements MarketplaceWebServiceProduc
 
             
     /**
+     * Get Matching Product For Id 
+     * GetMatchingProduct will return the details (attributes) for the
+     * given Identifier list. Identifer type can be one of [SKU|ASIN|UPC|EAN|ISBN|GTIN|JAN]
+     *   
+     * @see http://docs.amazonwebservices.com/${docPath}GetMatchingProductForId.html      
+     * @param mixed $request array of parameters for MarketplaceWebServiceProducts_Model_GetMatchingProductForId request or MarketplaceWebServiceProducts_Model_GetMatchingProductForId object itself
+     * @see MarketplaceWebServiceProducts_Model_GetMatchingProductForId
+     * @return MarketplaceWebServiceProducts_Model_GetMatchingProductForIdResponse MarketplaceWebServiceProducts_Model_GetMatchingProductForIdResponse
+     *
+     * @throws MarketplaceWebServiceProducts_Exception
+     */
+    public function getMatchingProductForId($request) 
+    {
+        require_once ('MarketplaceWebServiceProducts/Model/GetMatchingProductForIdResponse.php');
+        return MarketplaceWebServiceProducts_Model_GetMatchingProductForIdResponse::fromXML($this->_invoke('GetMatchingProductForId'));
+    }
+
+
+            
+    /**
      * Get My Price For SKU 
-     * Get my price
+     * GetMatchingProduct will return the details (attributes) for the
+     * given Identifier list. Identifer type can be one of [SKU|ASIN|UPC|EAN|ISBN|GTIN|JAN]
      *   
      * @see http://docs.amazonwebservices.com/${docPath}GetMyPriceForSKU.html      
      * @param mixed $request array of parameters for MarketplaceWebServiceProducts_Model_GetMyPriceForSKU request or MarketplaceWebServiceProducts_Model_GetMyPriceForSKU object itself
@@ -191,7 +212,8 @@ class  MarketplaceWebServiceProducts_Mock implements MarketplaceWebServiceProduc
             
     /**
      * Get My Price For ASIN 
-     * Get my price
+     * Gets categories information for a product identified by
+     * the SellerId and SKU.
      *   
      * @see http://docs.amazonwebservices.com/${docPath}GetMyPriceForASIN.html      
      * @param mixed $request array of parameters for MarketplaceWebServiceProducts_Model_GetMyPriceForASIN request or MarketplaceWebServiceProducts_Model_GetMyPriceForASIN object itself

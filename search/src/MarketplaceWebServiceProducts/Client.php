@@ -30,7 +30,7 @@ class MarketplaceWebServiceProducts_Client implements MarketplaceWebServiceProdu
 {
 
     const SERVICE_VERSION = '2011-10-01';
-    const MWS_CLIENT_VERSION = '2012-05-15';
+    const MWS_CLIENT_VERSION = '2012-07-01';
 
     /** @var string */
     private  $_awsAccessKeyId = null;
@@ -286,8 +286,37 @@ class MarketplaceWebServiceProducts_Client implements MarketplaceWebServiceProdu
 
             
     /**
+     * Get Matching Product For Id 
+     * GetMatchingProduct will return the details (attributes) for the
+     * given Identifier list. Identifer type can be one of [SKU|ASIN|UPC|EAN|ISBN|GTIN|JAN]
+     * 
+     * @see http://docs.amazonwebservices.com/${docPath}GetMatchingProductForId.html
+     * @param mixed $request array of parameters for MarketplaceWebServiceProducts_Model_GetMatchingProductForIdRequest request
+     * or MarketplaceWebServiceProducts_Model_GetMatchingProductForIdRequest object itself
+     * @see MarketplaceWebServiceProducts_Model_GetMatchingProductForId
+     * @return MarketplaceWebServiceProducts_Model_GetMatchingProductForIdResponse MarketplaceWebServiceProducts_Model_GetMatchingProductForIdResponse
+     *
+     * @throws MarketplaceWebServiceProducts_Exception
+     */
+    public function getMatchingProductForId($request)
+    {
+        if (!$request instanceof MarketplaceWebServiceProducts_Model_GetMatchingProductForIdRequest) {
+            require_once ('MarketplaceWebServiceProducts/Model/GetMatchingProductForIdRequest.php');
+            $request = new MarketplaceWebServiceProducts_Model_GetMatchingProductForIdRequest($request);
+        }
+        require_once ('MarketplaceWebServiceProducts/Model/GetMatchingProductForIdResponse.php');
+        $httpResponse = $this->_invoke($this->_convertGetMatchingProductForId($request));
+        $response = MarketplaceWebServiceProducts_Model_GetMatchingProductForIdResponse::fromXML($httpResponse['ResponseBody']);
+        $response->setResponseHeaderMetadata($httpResponse['ResponseHeaderMetadata']);
+        return $response;
+    }
+
+
+            
+    /**
      * Get My Price For SKU 
-     * Get my price
+     * GetMatchingProduct will return the details (attributes) for the
+     * given Identifier list. Identifer type can be one of [SKU|ASIN|UPC|EAN|ISBN|GTIN|JAN]
      * 
      * @see http://docs.amazonwebservices.com/${docPath}GetMyPriceForSKU.html
      * @param mixed $request array of parameters for MarketplaceWebServiceProducts_Model_GetMyPriceForSKURequest request
@@ -426,7 +455,8 @@ class MarketplaceWebServiceProducts_Client implements MarketplaceWebServiceProdu
             
     /**
      * Get My Price For ASIN 
-     * Get my price
+     * Gets categories information for a product identified by
+     * the SellerId and SKU.
      * 
      * @see http://docs.amazonwebservices.com/${docPath}GetMyPriceForASIN.html
      * @param mixed $request array of parameters for MarketplaceWebServiceProducts_Model_GetMyPriceForASINRequest request
@@ -519,6 +549,7 @@ class MarketplaceWebServiceProducts_Client implements MarketplaceWebServiceProdu
 
         /* Submit the request and read response body */
         try {
+
         	if (empty($this->_config['ServiceURL'])) {
         		throw new MarketplaceWebServiceProducts_Exception(
         			array ('ErrorCode' => 'InvalidServiceURL',
@@ -580,51 +611,25 @@ class MarketplaceWebServiceProducts_Client implements MarketplaceWebServiceProdu
      */
     private function _reportAnyErrors($responseBody, $status, $responseHeaderMetadata, Exception $e =  null)
     {
-        $ex = null;
-        if (!is_null($responseBody) && strpos($responseBody, '<') === 0) {
-            if (preg_match('@<RequestId>(.*)</RequestId>.*<Error>.*<Code>(.*)</Code>.*<Message>(.*)</Message>.*</Error>.*(<Error>)?@mi',
-                $responseBody, $errorMatcherOne)) {
-
-                $requestId = $errorMatcherOne[1];
-                $code = $errorMatcherOne[2];
-                $message = $errorMatcherOne[3];
-
-                require_once ('MarketplaceWebServiceProducts/Exception.php');
-                $ex = new MarketplaceWebServiceProducts_Exception(array ('Message' => $message, 'StatusCode' => $status, 'ErrorCode' => $code,
-                                                           'ErrorType' => 'Unknown', 'RequestId' => $requestId, 'XML' => $responseBody,
-                                                           'ResponseHeaderMetadata' => $responseHeaderMetadata));
-
-            } elseif (preg_match('@<Error>.*<Code>(.*)</Code>.*<Message>(.*)</Message>.*</Error>.*(<Error>)?.*<RequestID>(.*)</RequestID>@mi',
-                $responseBody, $errorMatcherTwo)) {
-
-                $code = $errorMatcherTwo[1];
-                $message = $errorMatcherTwo[2];
-                $requestId = $errorMatcherTwo[4];
-                require_once ('MarketplaceWebServiceProducts/Exception.php');
-                $ex = new MarketplaceWebServiceProducts_Exception(array ('Message' => $message, 'StatusCode' => $status, 'ErrorCode' => $code,
-                                                              'ErrorType' => 'Unknown', 'RequestId' => $requestId, 'XML' => $responseBody,
-                                                              'ResponseHeaderMetadata' => $responseHeaderMetadata));
-            } elseif (preg_match('@<Error>.*<Type>(.*)</Type>.*<Code>(.*)</Code>.*<Message>(.*)</Message>.*</Error>.*(<Error>)?.*<RequestId>(.*)</RequestId>@mi',
-                $responseBody, $errorMatcherThree)) {
-
-                $type = $errorMatcherThree[1];
-                $code = $errorMatcherThree[2];
-                $message = $errorMatcherThree[3];
-                $requestId = $errorMatcherThree[5];
-                require_once ('MarketplaceWebServiceProducts/Exception.php');
-                $ex = new MarketplaceWebServiceProducts_Exception(array ('Message' => $message, 'StatusCode' => $status, 'ErrorCode' => $code,
-                                                              'ErrorType' => $type, 'RequestId' => $requestId, 'XML' => $responseBody,
-                                                              'ResponseHeaderMetadata' => $responseHeaderMetadata));
-
-            } else {
-                require_once ('MarketplaceWebServiceProducts/Exception.php');
-                $ex = new MarketplaceWebServiceProducts_Exception(array('Message' => 'Internal Error', 'StatusCode' => $status, 'ResponseHeaderMetadata' => $responseHeaderMetadata));
-            }
-        } else {
-            require_once ('MarketplaceWebServiceProducts/Exception.php');
-            $ex = new MarketplaceWebServiceProducts_Exception(array('Message' => 'Internal Error', 'StatusCode' => $status, 'ResponseHeaderMetadata' => $responseHeaderMetadata));
+        $exProps = array();
+        $exProps["StatusCode"] = $status;
+        $exProps["ResponseHeaderMetadata"] = $responseHeaderMetadata;
+        
+        libxml_use_internal_errors(true);  // Silence XML parsing errors
+        $xmlBody = simplexml_load_string($responseBody);
+        
+        if ($xmlBody !== false) {  // Check XML loaded without errors
+            $exProps["XML"] = $responseBody;
+            $exProps["ErrorCode"] = $xmlBody->Error->Code;
+            $exProps["Message"] = $xmlBody->Error->Message;
+            $exProps["ErrorType"] = !empty($xmlBody->Error->Type) ? $xmlBody->Error->Type : "Unknown";
+            $exProps["RequestId"] = !empty($xmlBody->RequestID) ? $xmlBody->RequestID : $xmlBody->RequestId; // 'd' in RequestId is sometimes capitalized
+        } else { // We got bad XML in response, just throw a generic exception
+            $exProps["Message"] = "Internal Error";
         }
-        return $ex;
+        
+        require_once ('MarketplaceWebServiceProducts/Exception.php');
+        return new MarketplaceWebServiceProducts_Exception($exProps);
     }
 
 
@@ -642,60 +647,60 @@ class MarketplaceWebServiceProducts_Client implements MarketplaceWebServiceProdu
         if (!isset ($uri)) {
                 $uri = "/";
         }
-        $post  = "POST " . $uri . " HTTP/1.0\r\n";
-        $post .= "Host: " . $url['host'] . "\r\n";
-        $post .= "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n";
-        $post .= "Content-Length: " . strlen($query) . "\r\n";
-        $post .= "User-Agent: " . $this->_config['UserAgent'] . "\r\n";
-        $post .= "\r\n";
-        $post .= $query;
-        $port = array_key_exists('port',$url) ? $url['port'] : null;
         $scheme = '';
 
         switch ($url['scheme']) {
             case 'https':
-                $scheme = 'ssl://';
+                $scheme = 'https://';
                 $port = $port === null ? 443 : $port;
                 break;
             default:
-                $scheme = '';
+                $scheme = 'http://';
                 $port = $port === null ? 80 : $port;
         }
-        
-        $response = '';
-        if ($socket = @fsockopen($scheme . $url['host'], $port, $errno, $errstr, 10)) {
 
-            fwrite($socket, $post);
-
-            while (!feof($socket)) {
-                $response .= fgets($socket, 1160);
-            }
-            fclose($socket);
-            list($other, $responseBody) = explode("\r\n\r\n", $response, 2);
-            $other = preg_split("/\r\n|\n|\r/", $other);
-            
-            $headers = array();
-            foreach ($other as $value) {
-              if(!strpos($value, ':')) continue;
-              list ($k, $v) = explode (': ', $value);
-              if (array_key_exists($k, $headers)) {
-                $headers[$k] = $headers[$k] . "," . $v;
-              } else {
-                $headers[$k] = $v;
-              }
-              
-            }
-            require_once('MarketplaceWebServiceProducts/Model/ResponseHeaderMetadata.php');
-            $responseHeaderMetadata = new MarketplaceWebServiceProducts_Model_ResponseHeaderMetadata(
-              $headers['x-mws-request-id'],
-              $headers['x-mws-response-context'],
-              $headers['x-mws-timestamp']);
-
-            list($protocol, $code, $text) = explode(' ', trim(array_shift($other)), 3);
-        } else {
-            throw new Exception ("Unable to establish connection to host " . $url['host'] . " $errstr");
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $scheme . $url['host'] . $uri);
+        curl_setopt($ch, CURLOPT_PORT, $port);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_USERAGENT, $this->_config['UserAgent']);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+        curl_setopt($ch, CURLOPT_HEADER, true); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if ($_config['ProxyHost'] != null && $_config['ProxyPort'] != -1)
+        {
+            curl_setopt($ch, CURLOPT_PROXY, $_config['ProxyHost'] . ':' . $_config['ProxyPort']);
         }
 
+        $response = "";
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        list($other, $responseBody) = explode("\r\n\r\n", $response, 2);
+        $other = preg_split("/\r\n|\n|\r/", $other);
+
+        $headers = array();
+        foreach ($other as $value) {
+          list ($k, $v) = explode (': ', $value);
+          if (array_key_exists($k, $headers)) {
+            $headers[$k] = $headers[$k] . "," . $v;
+          } else {
+            $headers[$k] = $v;
+          }
+            
+        }
+ 
+        require_once('MarketplaceWebServiceProducts/Model/ResponseHeaderMetadata.php');
+        $responseHeaderMetadata = new MarketplaceWebServiceProducts_Model_ResponseHeaderMetadata(
+          $headers['x-mws-request-id'],
+          $headers['x-mws-response-context'],
+          $headers['x-mws-timestamp']);
+
+        list($protocol, $code, $text) = explode(' ', trim(array_shift($other)), 3);
+ 
         return array ('Status' => (int)$code, 'ResponseBody' => $responseBody, 'ResponseHeaderMetadata' => $responseHeaderMetadata);
     }
 
@@ -924,6 +929,33 @@ class MarketplaceWebServiceProducts_Client implements MarketplaceWebServiceProdu
         
                                                 
     /**
+     * Convert GetMatchingProductForIdRequest to name value pairs
+     */
+    private function _convertGetMatchingProductForId($request) {
+        
+        $parameters = array();
+        $parameters['Action'] = 'GetMatchingProductForId';
+        if ($request->isSetSellerId()) {
+            $parameters['SellerId'] =  $request->getSellerId();
+        }
+        if ($request->isSetMarketplaceId()) {
+            $parameters['MarketplaceId'] =  $request->getMarketplaceId();
+        }
+        if ($request->isSetIdType()) {
+            $parameters['IdType'] =  $request->getIdType();
+        }
+        if ($request->isSetIdList()) {
+            $idListgetMatchingProductForIdRequest = $request->getIdList();
+            foreach  ($idListgetMatchingProductForIdRequest->getId() as $ididListIndex => $ididList) {
+                $parameters['IdList' . '.' . 'Id' . '.'  . ($ididListIndex + 1)] =  $ididList;
+            }
+        }
+
+        return $parameters;
+    }
+        
+                                                
+    /**
      * Convert GetMyPriceForSKURequest to name value pairs
      */
     private function _convertGetMyPriceForSKU($request) {
@@ -1114,5 +1146,5 @@ class MarketplaceWebServiceProducts_Client implements MarketplaceWebServiceProdu
         return $parameters;
     }
         
-                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                
 }

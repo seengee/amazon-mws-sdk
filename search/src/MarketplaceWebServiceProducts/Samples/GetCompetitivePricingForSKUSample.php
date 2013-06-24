@@ -77,7 +77,7 @@ include_once ('.config.inc.php');
  // object or array of parameters
  invokeGetCompetitivePricingForSKU($service, $request);
 
-                                            
+                                                
 /**
   * Get Competitive Pricing For SKU Action Sample
   * Gets competitive pricing and related information for a product identified by

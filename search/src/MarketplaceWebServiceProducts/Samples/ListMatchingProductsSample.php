@@ -78,7 +78,7 @@ include_once ('ProductsUtil.php');
  // object or array of parameters
  invokeListMatchingProducts($service, $request);
 
-                                        
+                                            
 /**
   * List Matching Products Action Sample
   * ListMatchingProducts can be used to

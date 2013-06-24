@@ -77,7 +77,7 @@ include_once ('.config.inc.php');
  // object or array of parameters
  invokeGetProductCategoriesForSKU($service, $request);
 
-                                                    
+                                                        
 /**
   * Get Product Categories For SKU Action Sample
   * Gets categories information for a product identified by
